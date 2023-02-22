@@ -21,12 +21,11 @@ class UserList(generics.ListCreateAPIView):
 class TransactionListView(APIView):
     # authentication_classes = (TokenAuthentication)
     # permission_classes = (IsAuthenticated)
-    print('----------in TransactionListView----------')
     authentication_classes = []
     permission_classes = []
 
+    # Get all Transactions for a specific user
     # def get(self, request):
-    #     # print('------request----', request.user)
     #     transactions = Transaction.objects.filter(user_id=request.user.id)
     #     serializer = TransactionSerializer(transactions, many=True)
     #     return Response(serializer.data)
@@ -45,7 +44,6 @@ class TransactionCreateView(APIView):
         return self.request.user.objects.all()
 
     def post(self, request):
-        print('in TransactionCreateView')
         try:
           transaction = Transaction.objects.create(
               transaction_type=request.data['transaction_type'],
@@ -70,10 +68,11 @@ class TransactionCreateView(APIView):
 
         return Response({'message': 'Transaction created successfully'})
 
-# Build API to get all Accounts for a specific user
 class AccountListView(APIView):
     authentication_classes = []
     permission_classes = []
+    
+    # Build API to get all Accounts for a specific user
     # def get(self, request):
     #     accounts = Account.objects.filter(user_id=request.user.id)
     #     serializer = AccountSerializer(accounts, many=True)
