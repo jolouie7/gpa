@@ -1,3 +1,4 @@
+from datetime import datetime
 from rest_framework import generics
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -83,6 +84,15 @@ class AccountListView(APIView):
         serializer = AccountSerializer(accounts, many=True)
         return Response(serializer.data)
 
+class AccountDetailView(APIView):
+    authentication_classes = []
+    permission_classes = []
+
+    def get(self, request, pk):
+        account = Account.objects.get(id=pk)
+        serializer = AccountSerializer(account, many=False)
+        return Response(serializer.data)
+
 class AccountCreateView(APIView):
     def post(self, request):
         serializer = AccountSerializer(data=request.data)
@@ -90,3 +100,25 @@ class AccountCreateView(APIView):
             serializer.save(user=request.user)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+# Build API to get Balance for a certain date.
+class BalanceView(APIView):
+    # authentication_classes = (TokenAuthentication,)
+    # permission_classes = (permissions.IsAuthenticated,)
+    authentication_classes = []
+    permission_classes = []
+
+    def get(self, request, date):
+        try:
+            date_obj = datetime.strptime(date, '%Y-%m-%d')
+        except ValueError:
+            return Response({'error': 'Invalid date format. Please use YYYY-MM-DD'}, status=400)
+      # get all Transactions that were created on or before a specified date
+        transactions = Transaction.objects.filter(date_created__lte=date_obj)
+        balance = 0
+        for transaction in transactions:
+            if transaction.transaction_type == 'DEBIT':
+                balance -= transaction.amount
+            elif transaction.transaction_type == 'CREDIT':
+                balance += transaction.amount
+        return Response({'balance': balance})

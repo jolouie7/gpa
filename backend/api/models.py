@@ -12,7 +12,7 @@ class User(models.Model):
 
 class Account(models.Model):
     account_number = models.CharField(max_length=16, unique=True, default=''.join([str(random.randint(0, 9)) for _ in range(16)]))
-    current_balance = models.IntegerField(default=0)
+    current_balance = models.FloatField(default=0)
     user_id = models.ForeignKey(User, on_delete=models.CASCADE)
 
     def __str__(self):
