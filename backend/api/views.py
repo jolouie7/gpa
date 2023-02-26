@@ -17,7 +17,7 @@ from rest_framework.status import (
 
 # Get all users
 # Create a new user
-# !OVERRIDE DEFAULT USER MODEL WITH CUSTOM USER MODEL
+# !FUTURE: OVERRIDE DEFAULT USER MODEL WITH CUSTOM USER MODEL
 @api_view(['GET', 'POST'])
 @authentication_classes([])
 @permission_classes([])
@@ -39,7 +39,7 @@ def user_list(request):
 @permission_classes([IsAuthenticated])
 def transaction_detail_view(request, user_id):
     try:
-        transactions = Transaction.objects.filter(user_id=user_id)
+        transactions = Transaction.objects.filter(user_id=user_id).order_by('-date_updated')
         serializer = TransactionSerializer(transactions, many=True)
         return Response(serializer.data)
     except Account.DoesNotExist:
@@ -87,8 +87,8 @@ def account_list_view(request):
         return Response({'message': 'Account not found'}, status=status.HTTP_404_NOT_FOUND)
 
 @api_view(['GET'])
-@authentication_classes([])
-@permission_classes([])
+@authentication_classes([TokenAuthentication])
+@permission_classes([IsAuthenticated])
 def account_detail_view(request, user_id):
     try:
         account = Account.objects.filter(user_id=user_id)
@@ -107,8 +107,7 @@ def account_create_view(request):
         return Response(serializer.data, status=status.HTTP_201_CREATED)
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-
-# Build API to get Balance for a certain date
+# Build API to get Balance for a certain date for a specific user
 @api_view(['GET'])
 @authentication_classes([TokenAuthentication])
 @permission_classes([IsAuthenticated])
@@ -127,26 +126,3 @@ def balance_view(request, date, user_id):
         elif transaction.transaction_type == 'CREDIT':
             balance += transaction.amount
     return Response({'balance': balance})
-
-# @csrf_exempt
-# @api_view(["POST"])
-# @permission_classes((AllowAny,))
-# def login(request):
-#     username = request.data.get("username")
-#     password = request.data.get("password")
-#     if username is None or password is None:
-#         return Response({'error': 'Please provide both username and password'},
-#                         status=HTTP_400_BAD_REQUEST)
-#     user = authenticate(username=username, password=password)
-#     if not user:
-#         return Response({'error': 'Invalid Credentials'},
-#                         status=HTTP_404_NOT_FOUND)
-#     token, _ = Token.objects.get_or_create(user=user)
-#     return Response({'token': token.key},
-#                     status=HTTP_200_OK)
-
-# @csrf_exempt
-# @api_view(["GET"])
-# def sample_api(request):
-#     data = {'sample_data': 123}
-#     return Response(data, status=HTTP_200_OK)
