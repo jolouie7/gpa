@@ -21,7 +21,7 @@ class Account(models.Model):
 class Transaction(models.Model):
     date_created = models.DateTimeField(auto_now_add=True)
     date_updated = models.DateTimeField(auto_now=True)
-    transaction_type = models.CharField(choices=[('DEBIT', 'Debit'), ('CREDIT', 'Credit')], max_length=6)
+    transaction_type = models.CharField(choices=[('DEBIT', 'DEBIT'), ('CREDIT', 'CREDIT')], max_length=6)
     note = models.CharField(max_length=200)
     amount = models.IntegerField()
     account_id = models.ForeignKey(Account, on_delete=models.CASCADE)
