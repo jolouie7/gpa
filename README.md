@@ -44,6 +44,8 @@ You can now run the development server:
 
     $ python manage.py runserver
 
+> To Create a user type command "python manage.py createsuperuser"
+
 Future:
 
 - Add unit tests
