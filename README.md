@@ -48,5 +48,4 @@ You can now run the development server:
 
 Future:
 
-- Add unit tests
 - Change DB to postgres
